@@ -1,36 +1,44 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Your JavaScript code will go here
-});
-document.addEventListener('DOMContentLoaded', function () {
-    const expenseForm = document.getElementById('expenseForm');
-    const expenseList = document.getElementById('expenseList');
+function onsignup(event) {
+    event.preventDefault();
+    const expenses = event.target.expenses.value;
+    const description = event.target.description.value;
+    const category = event.target.category.value;
 
-    expenseForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+    const obj = {
+        expenses,
+        description,
+        category
+    };
+    localStorage.setItem(obj.category, JSON.stringify(obj));
+    showUserOnScreen(obj);
+}
 
-        const expenseName = document.getElementById('expenseName').value;
-        const expenseAmount = document.getElementById('expenseAmount').value;
+function showUserOnScreen(obj) {
+    const parent = document.getElementById('project');
+    const child = document.createElement('li');
+    child.textContent = obj.expenses + '-' + obj.description + '-' + obj.category;
+    parent.appendChild(child);
 
-        if (expenseName && expenseAmount) {
-            const expenseItem = document.createElement('li');
-            expenseItem.className = 'list-group-item';
-            expenseItem.textContent = `${expenseName}: $${expenseAmount}`;
+    const editbutton = document.createElement('input');
+    editbutton.type = 'button';
+    editbutton.value = 'Edit';
+    editbutton.onclick = () => {
+        localStorage.removeItem(obj.category);
+        parent.removeChild(child);
+        document.getElementById('expenses').value = obj.expenses;
+        document.getElementById('description').value = obj.description;
+        document.getElementById('category').value = obj.category;
+    };
+    child.appendChild(editbutton);
+    parent.appendChild(child);
 
-            expenseList.appendChild(expenseItem);
-
-            // Save to local storage
-            saveToLocalStorage(expenseName, expenseAmount);
-
-            // Clear form fields
-            expenseForm.reset();
-        }
-    });
-
-    // Function to save data to local storage
-    function saveToLocalStorage(name, amount) {
-        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
-
-        expenses.push({ name, amount });
-        localStorage.setItem('expenses', JSON.stringify(expenses));
-    }
-});
+    const deletebutton = document.createElement('input');
+    deletebutton.type = 'button';
+    deletebutton.value = 'Delete';
+    deletebutton.onclick = () => {
+        localStorage.removeItem(obj.category);
+        parent.removeChild(child);
+    };
+    child.appendChild(deletebutton);
+    parent.appendChild(child);
+}
